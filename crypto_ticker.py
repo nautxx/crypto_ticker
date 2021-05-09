@@ -65,15 +65,10 @@ def display_ticker(set_range=1):
 
 get_crypto(crypto_currency['coin'], crypto_currency['currency'])
 
-while True:
+while True: # loop to infiniti
     parsed_link = parse_the_link()
     ticker_message = get_prices_led(parsed_link, 6)
     terminal_message = get_prices(parsed_link)
-
-    serial = spi(port=0, device=0, gpio=noop())
-    device = max7219(serial, cascaded=4, block_orientation=-90, rotate=2, contrast=1)
-
-    message = coin.lower() + "-" + currency.lower() + ": $" + str(price_format)   
     
     print("\n" + terminal_message)
     print("Next Update: ".lower() , get_next_timestamp())
