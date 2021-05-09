@@ -6,17 +6,20 @@ from luma.core.legacy import text, show_message
 from luma.core.legacy.font import proportional, ATARI_FONT, CP437_FONT, LCD_FONT, SEG7_FONT, SINCLAIR_FONT, SPECCY_FONT, TINY_FONT
 import time
 from datetime import datetime, timedelta
+from config import api_db, crypto_currency
 
+crypto = {}
 
-coin = "BTC"    #Cryptocoin Ticker Symbol: BTC, DOGE, ETH, etc.
-currency = "USD"    #Currency Abbreviation: USD, AUD, DOGE, ETH, etc.
+def get_crypto(coin="BTC", currency="USD"): #Cryptocoin Ticker Symbol: BTC, DOGE, ETH, etc.
+    crypto[0] = coin
+    crypto[1] = currency 
 
-api_key = "8ec5a22972553ddb1eff5a049dd2947b43e0d00237c0ffaae719a6e9a2eef3b8"    #None if no api_key
-link = "https://min-api.cryptocompare.com/data/pricemulti?fsyms={0}&tsyms={1}".format(coin, currency)
-api_request_frequency = 300   #in seconds
-
-if api_key is not None:
-    link += "&api_key=" + api_key
+def get_api_link(key=None):
+    link = "https://min-api.cryptocompare.com/data/pricemulti?fsyms={0}&tsyms={1}".format(crypto[0], crypto[1])
+    if key is not None:
+        link += "&api_key=" + key
+        return link
+    return link
 
 while True:
     page = requests.get(link)
@@ -35,6 +38,6 @@ while True:
     for x in range(3):
         show_message(device, message, y_offset=0, fill="white", font=proportional(TINY_FONT), scroll_delay=0.06)
     
-    update_timestamp = (datetime.now() + timedelta(seconds=api_request_frequency)).strftime("%Y-%m-%d %H:%M:%S")
+    update_timestamp = (datetime.now() + timedelta(seconds=api_key['frequency'])).strftime("%Y-%m-%d %H:%M:%S")
     print("next update: ", update_timestamp)
-    time.sleep(api_request_frequency)   #adds time delay in (s, seconds) before looping
+    time.sleep(api_key['frequency'])   #adds time delay in (s, seconds) before looping
