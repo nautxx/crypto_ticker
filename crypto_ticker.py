@@ -21,23 +21,62 @@ def get_api_link(key=None):
         return link
     return link
 
-while True:
-    page = requests.get(link)
+def parse_the_link():
+    page = requests.get(get_api_link(api_db['key']))
     page_parsed = json.loads(page.text)
+    return page_parsed
 
-    price = page_parsed[coin][currency]
-    price_format = "{:,}".format(price) #adds commas for readability
+def get_current_timestamp():
+    return datetime.now().strftime("%Y.%m.%d %H:%M:%S")
+
+def get_next_timestamp():
+    timestamp = (datetime.now() + timedelta(seconds=api_db['freq'])).strftime("%Y.%m.%d %H:%M")
+    return timestamp
+
+def get_prices(link):
+    prices = ""
+    for coin in link:
+        for currency in link[coin]:
+            price = link[coin][currency]
+            price_formatted = "{:,}".format(price)
+            if coin != currency:
+                prices += "{0}-{1}: {2}".format(coin, currency, price_formatted).lower() + '\t' + get_current_timestamp() + "\n"
+    return prices
+
+def get_prices_led(link, spacing=1):
+    prices = ""
+    spaces = ""
+    for space in range(spacing):
+        spaces += " "
+    for coin in link:
+        for currency in link[coin]:
+            price = link[coin][currency]
+            price_formatted = "{:,}".format(price)
+            if coin != currency:
+                prices += "{0}-{1}: {2}{3}".format(coin, currency, price_formatted, spaces).lower()
+    return prices
+
+def display_ticker(set_range=1):
+    serial = spi(port=0, device=0, gpio=noop())
+    device = max7219(serial, cascaded=4, block_orientation=-90, rotate=2, contrast=1)
+
+    for tick in range(set_range):
+        show_message(device, ticker_message, y_offset=0, fill="white", font=proportional(TINY_FONT), scroll_delay=0.06)
+
+get_crypto(crypto_currency['coin'], crypto_currency['currency'])
+
+while True:
+    parsed_link = parse_the_link()
+    ticker_message = get_prices_led(parsed_link, 6)
+    terminal_message = get_prices(parsed_link)
 
     serial = spi(port=0, device=0, gpio=noop())
     device = max7219(serial, cascaded=4, block_orientation=-90, rotate=2, contrast=1)
 
     message = coin.lower() + "-" + currency.lower() + ": $" + str(price_format)   
     
-    print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    print(message)
-    for x in range(3):
-        show_message(device, message, y_offset=0, fill="white", font=proportional(TINY_FONT), scroll_delay=0.06)
-    
-    update_timestamp = (datetime.now() + timedelta(seconds=api_key['frequency'])).strftime("%Y-%m-%d %H:%M:%S")
-    print("next update: ", update_timestamp)
-    time.sleep(api_key['frequency'])   #adds time delay in (s, seconds) before looping
+    print("\n" + terminal_message)
+    print("Next Update: ".lower() , get_next_timestamp())
+
+    display_ticker()
+    time.sleep(api_db['freq'])   # adds time delay in (s, seconds) before looping
