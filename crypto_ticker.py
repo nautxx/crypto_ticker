@@ -30,7 +30,8 @@ def get_current_timestamp():
     return datetime.now().strftime("%Y.%m.%d %H:%M:%S")
 
 def get_next_timestamp():
-    timestamp = (datetime.now() + timedelta(seconds=api_db['freq'])).strftime("%Y.%m.%d %H:%M")
+    time_offset = len(ticker_message)
+    timestamp = (datetime.now() + timedelta(seconds=api_db['freq'] + time_offset)).strftime("%Y.%m.%d %H:%M")
     return timestamp
 
 def get_prices(link):
