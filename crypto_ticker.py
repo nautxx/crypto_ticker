@@ -72,7 +72,7 @@ while True: # loop to infiniti
     terminal_message = get_prices(parsed_link)
     
     print("\n" + terminal_message)
-    print("Next Update: ".lower() , get_next_timestamp())
+    print("Next Update: ".lower(), get_next_timestamp())
 
     display_ticker()
     time.sleep(api_db['freq'])   # adds time delay in (s, seconds) before looping
