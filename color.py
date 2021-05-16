@@ -43,7 +43,7 @@ class Color:
 
 bold, dim, italic  = 1, 2, 3
 
-def color(foreground=None, background=None, style=None): # 0-255, 0-255, style: 1=bold, 2=dim, 3=italic
+def color(foreground=None, background=None, style=None): # 0-255, 0-255, style: bold, dim, or italic
     if foreground is None and background is None and style is None:
         return default()
     elif foreground is not None and background is None and style is None:
