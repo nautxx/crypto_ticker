@@ -21,14 +21,16 @@ class User(object): #initialize user data
         self.coin = coin
         self.currency = currency
         self.apikey = apikey
+        self.message = message
 
 @click.group()
 @click.option('--coin', default='BTC', help='Crypto ticker symbol. Multiple ticker symbols separate with comma')
 @click.option('--currency', default='USD', help='Currency. Multiple currencies separate with comma')
-@click.option('--apikey', help='Enter API key from cryptocompare.com')
+@click.option('--apikey', default=None, help='Enter API key from cryptocompare.com')
+@click.option('--message', default=None, help='Custom message to display for message_bar')
 @click.pass_context
-def main(ctx, coin, currency, api): #user stored values entered in cli
-    ctx.obj = User(coin, currency, apikey)
+def main(ctx, coin, currency, apikey, message): #user stored values entered in cli
+    ctx.obj = User(coin, currency, apikey, message)
 
 @click.pass_obj
 def parse_the_link(ctx):
@@ -43,8 +45,7 @@ def get_current_timestamp():
     return datetime.now().strftime("%Y.%m.%d %H:%M:%S")
 
 def get_next_timestamp():
-    time_offset = len(ticker_message)
-    timestamp = (datetime.now() + timedelta(seconds=api_db['freq'] + time_offset)).strftime("%Y.%m.%d %H:%M")
+    timestamp = (datetime.now() + timedelta(seconds=config['frequency'])).strftime("%Y.%m.%d %H:%M")
     return timestamp
 
 def get_prices(link, spacing=1):
@@ -79,6 +80,19 @@ def cryptoticker_endless(ctx):  # loop to infiniti
             if system:
                 ticker_display()
             time.sleep(config['frequency'])   # adds time delay in (s, seconds) before looping
+
+@main.command()
+@click.pass_obj
+def messagebar_scrolling(ctx):
+    pass
+
+@main.command()
+@click.pass_obj
+def messagebar_static(ctx):
+    pass
+
+def logger(message):
+    pass
 
 if __name__ == '__main__':
     main()
