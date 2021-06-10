@@ -34,7 +34,7 @@ def main(ctx, coin, currency, apikey, message): #user stored values entered in c
 
 @click.pass_obj
 def parse_the_link(ctx):
-    link = config['link'].format(ctx.coin, ctx.currency)
+    link = config['link2'].format(ctx.coin, ctx.currency)
     if ctx.apikey is not None:
         link += "&api_key=" + ctx.apikey
     page = requests.get(link)
@@ -52,7 +52,7 @@ def get_prices(link, spacing=1):
     prices, prices_display, spaces = '','',''
 
     for space in range(spacing):
-        spaces += " "
+        spaces += ' '
 
     for coin in link:
         for currency in link[coin]:
@@ -64,6 +64,47 @@ def get_prices(link, spacing=1):
 
     return prices, prices_display
 
+def get_data(link, spacing=1):
+    output, output_display = '', ''
+    for coin in link['RAW']:
+        for currency in link['RAW'][coin]:
+            if coin != currency:
+                for category in link['RAW'][coin][currency]:
+                    value = link['RAW'][coin][currency][category]   
+                    currencysymbol = link['RAW'][coin][currency]['TOSYMBOL']
+                    price = link['RAW'][coin][currency]['PRICE']
+                    twentyfourhour = link['RAW'][coin][currency]['CHANGE24HOUR']
+                    twentyfourhour_pct = link['RAW'][coin][currency]['CHANGEPCT24HOUR']
+                    if price <= 1 and price >= -1:
+                        price_short = '{0:,.8f}'.format(float(price))
+                    else:
+                        price_short = '{0:,.2f}'.format(float(price))
+                    if twentyfourhour <= 1 and twentyfourhour >=-1:
+                        twentyfourhour_short = '{0:,.8f}'.format(float(twentyfourhour))
+                    else:
+                        twentyfourhour_short = '{0:,.2f}'.format(float(twentyfourhour))
+                    if twentyfourhour_pct <= 1 and twentyfourhour_pct >=-1:
+                        twentyfourhour_pct_short = '{0:,.8f}'.format(float(twentyfourhour_pct))
+                    else:
+                        twentyfourhour_pct_short = '{0:,.3f}'.format(float(twentyfourhour_pct))
+                    twentyfourhour_pct_num = int(twentyfourhour_pct)
+                    if twentyfourhour_pct_num > 0:
+                        twentyfourhour_symbol = '\x1b[38;5;12m'
+                        twentyfourhour_color = '\x1b[38;5;12m'
+                    else:
+                        twentyfourhour_symbol = '\x1b[38;5;1m'
+                        twentyfourhour_color = '\x1b[38;5;1m'
+                    hour = link['RAW'][coin][currency]['CHANGEHOUR']
+                    hour_pct = link['RAW'][coin][currency]['CHANGEPCTHOUR']
+                    twentyfourhour_low = link['RAW'][coin][currency]['LOW24HOUR']
+                    twentyfourhour_high = link['RAW'][coin][currency]['HIGH24HOUR']
+
+            output += '\x1b[0;5;37m' + str(coin) + '-' + currencysymbol.ljust(5,' ') + '\t' \
+                    + str(price_short).ljust(14,' ') + twentyfourhour_color \
+                    + str(twentyfourhour_short).ljust(14,' ') + twentyfourhour_symbol \
+                    + '(' + str(twentyfourhour_pct_short) + '%)\n' + '\x1b[0m'    
+    return output
+
 def ticker_display(set_range=1):
     for tick in range(set_range):
         show_message(device, ticker_message, y_offset=0, fill='white', font=proportional(TINY_FONT), scroll_delay=0.06)
@@ -72,14 +113,14 @@ def ticker_display(set_range=1):
 @click.pass_obj
 def cryptoticker_endless(ctx):  # loop to infiniti
     while True:
-            parsed_link = parse_the_link()
-            terminal_message, ticker_message = get_prices(parsed_link)
-            
-            print("\n" + terminal_message)
-            print("Next Update: ".lower(), get_next_timestamp())
-            if system:
-                ticker_display()
-            time.sleep(config['frequency'])   # adds time delay in (s, seconds) before looping
+        parsed_link = parse_the_link()
+#            terminal_message, ticker_message = get_prices(parsed_link)
+        terminal_message = get_data(parsed_link)
+        print('\n' + "           \tPrice         24hr          pct" + '\n' + terminal_message)
+        print("Next Update: ".lower(), get_next_timestamp())
+        if system:
+            ticker_display()
+        time.sleep(config['frequency'])   # adds time delay in (s, seconds) before looping
 
 @main.command()
 @click.pass_obj
