@@ -1,28 +1,41 @@
+import platform
+import click
 import requests
 import json
-from luma.led_matrix.device import max7219
-from luma.core.interface.serial import spi, noop
-from luma.core.legacy import text, show_message
-from luma.core.legacy.font import proportional, ATARI_FONT, CP437_FONT, LCD_FONT, SEG7_FONT, SINCLAIR_FONT, SPECCY_FONT, TINY_FONT
 import time
 from datetime import datetime, timedelta
-from config import api_db, crypto_currency
+from config import config
 
-crypto = {}
+system = platform.system() not in ['Darwin', 'Java', 'Windows']
+if system:  #skip luma load when using mac or windows operating systems
+    from luma.led_matrix.device import max7219
+    from luma.core.interface.serial import spi, noop
+    from luma.core.legacy import text, show_message
+    from luma.core.legacy.font import proportional, ATARI_FONT, CP437_FONT, LCD_FONT, SEG7_FONT, SINCLAIR_FONT, SPECCY_FONT, TINY_FONT
 
-def get_crypto(coin="BTC", currency="USD"): #Cryptocoin Ticker Symbol: BTC, DOGE, ETH, etc.
-    crypto[0] = coin
-    crypto[1] = currency 
+    serial = spi(port=0, device=0, gpio=noop())
+    device = max7219(serial, cascaded=4, block_orientation=-90, rotate=2, contrast=1)
 
-def get_api_link(key=None):
-    link = "https://min-api.cryptocompare.com/data/pricemulti?fsyms={0}&tsyms={1}".format(crypto[0], crypto[1])
-    if key is not None:
-        link += "&api_key=" + key
-        return link
-    return link
+class User(object): #initialize user data
+    def __init__(self, coin=None, currency=None, apikey=None, message=None):
+        self.coin = coin
+        self.currency = currency
+        self.apikey = apikey
 
-def parse_the_link():
-    page = requests.get(get_api_link(api_db['key']))
+@click.group()
+@click.option('--coin', default='BTC', help='Crypto ticker symbol. Multiple ticker symbols separate with comma')
+@click.option('--currency', default='USD', help='Currency. Multiple currencies separate with comma')
+@click.option('--apikey', help='Enter API key from cryptocompare.com')
+@click.pass_context
+def main(ctx, coin, currency, api): #user stored values entered in cli
+    ctx.obj = User(coin, currency, apikey)
+
+@click.pass_obj
+def parse_the_link(ctx):
+    link = config['link'].format(ctx.coin, ctx.currency)
+    if ctx.apikey is not None:
+        link += "&api_key=" + ctx.apikey
+    page = requests.get(link)
     page_parsed = json.loads(page.text)
     return page_parsed
 
@@ -34,45 +47,38 @@ def get_next_timestamp():
     timestamp = (datetime.now() + timedelta(seconds=api_db['freq'] + time_offset)).strftime("%Y.%m.%d %H:%M")
     return timestamp
 
-def get_prices(link):
-    prices = ""
+def get_prices(link, spacing=1):
+    prices, prices_display, spaces = '','',''
+
+    for space in range(spacing):
+        spaces += " "
+
     for coin in link:
         for currency in link[coin]:
             price = link[coin][currency]
             price_formatted = "{:,}".format(price)
             if coin != currency:
                 prices += "{0}-{1}: {2}".format(coin, currency, price_formatted).lower() + '\t' + get_current_timestamp() + "\n"
-    return prices
+                prices_display += "{0}-{1}: {2}{3}".format(coin, currency, price_formatted, spaces).lower()
 
-def get_prices_led(link, spacing=1):
-    prices = ""
-    spaces = ""
-    for space in range(spacing):
-        spaces += " "
-    for coin in link:
-        for currency in link[coin]:
-            price = link[coin][currency]
-            price_formatted = "{:,}".format(price)
-            if coin != currency:
-                prices += "{0}-{1}: {2}{3}".format(coin, currency, price_formatted, spaces).lower()
-    return prices
+    return prices, prices_display
 
-def display_ticker(set_range=1):
-    serial = spi(port=0, device=0, gpio=noop())
-    device = max7219(serial, cascaded=4, block_orientation=-90, rotate=2, contrast=1)
-
+def ticker_display(set_range=1):
     for tick in range(set_range):
-        show_message(device, ticker_message, y_offset=0, fill="white", font=proportional(TINY_FONT), scroll_delay=0.06)
+        show_message(device, ticker_message, y_offset=0, fill='white', font=proportional(TINY_FONT), scroll_delay=0.06)
 
-get_crypto(crypto_currency['coin'], crypto_currency['currency'])
+@main.command()
+@click.pass_obj
+def cryptoticker_endless(ctx):  # loop to infiniti
+    while True:
+            parsed_link = parse_the_link()
+            terminal_message, ticker_message = get_prices(parsed_link)
+            
+            print("\n" + terminal_message)
+            print("Next Update: ".lower(), get_next_timestamp())
+            if system:
+                ticker_display()
+            time.sleep(config['frequency'])   # adds time delay in (s, seconds) before looping
 
-while True: # loop to infiniti
-    parsed_link = parse_the_link()
-    ticker_message = get_prices_led(parsed_link, 6)
-    terminal_message = get_prices(parsed_link)
-    
-    print("\n" + terminal_message)
-    print("Next Update: ".lower(), get_next_timestamp())
-
-    display_ticker()
-    time.sleep(api_db['freq'])   # adds time delay in (s, seconds) before looping
+if __name__ == '__main__':
+    main()
