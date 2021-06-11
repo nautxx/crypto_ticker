@@ -131,7 +131,7 @@ def get_data(link, spacing=1):
                     + str(hour_short).rjust(12,' ') + '\t' + hour_symbol \
                     + str('(' + hour_pct_short + '%)').rjust(10,' ') + '\x1b[0m' \
                     + str(last_update + '\n').rjust(24,' ')
-    return output
+    return output, output_display
 
 def ticker_display(set_range=1):
     for tick in range(set_range):
@@ -142,8 +142,7 @@ def ticker_display(set_range=1):
 def cryptoticker_endless(ctx):  # loop to infiniti
     while True:
         parsed_link = parse_the_link()
-#            terminal_message, ticker_message = get_prices(parsed_link)
-        terminal_message = get_data(parsed_link)
+        terminal_message, ticker_message = get_data(parsed_link)
         print('\n' + "           \t   Price                24hr           pct         1hr         pct            Last update" + '\n' + terminal_message)
         print("Next Update: ".lower(), get_next_timestamp())
         print("Press 'Ctrl + C' to exit")
@@ -155,17 +154,19 @@ def cryptoticker_endless(ctx):  # loop to infiniti
 @click.pass_obj
 def messagebar_scrolling(ctx):
     logger(ctx.message)
+    print(ctx.message)
 
     serial = spi(port=0, device=0, gpio=noop())
     device = max7219(serial, cascaded=4, block_orientation=-90, rotate=2, contrast=1)
 
     for letter in range(set_range):
-        show_message(device, message, fill="white", font=proportional(TINY_FONT), scroll_delay=0.06)
+        show_message(device, ctx.message, fill="white", font=proportional(TINY_FONT), scroll_delay=0.06)
 
 @main.command()
 @click.pass_obj
 def messagebar_static(ctx):
     logger(ctx.message)
+    print(ctx.message)
 
     with canvas(device) as draw:
         text(draw, (0, 0), ctx.message, fill="white", font=proportional(TINY_FONT))
