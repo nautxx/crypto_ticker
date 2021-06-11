@@ -159,7 +159,11 @@ def messagebar_scrolling(ctx):
 @main.command()
 @click.pass_obj
 def messagebar_static(ctx):
-    pass
+    logger(message)
+
+    with canvas(device) as draw:
+        text(draw, (0, 0), message, fill="white", font=proportional(TINY_FONT))
+    time.sleep(3)  #time in (s, seconds) to display the static text    
 
 def logger(message):
     path = Path(__file__).parent.absolute()
