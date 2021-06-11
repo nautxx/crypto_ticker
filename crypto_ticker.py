@@ -154,7 +154,7 @@ def cryptoticker_endless(ctx):  # loop to infiniti
 @main.command()
 @click.pass_obj
 def messagebar_scrolling(ctx):
-    logger(message)
+    logger(ctx.message)
 
     serial = spi(port=0, device=0, gpio=noop())
     device = max7219(serial, cascaded=4, block_orientation=-90, rotate=2, contrast=1)
@@ -165,10 +165,10 @@ def messagebar_scrolling(ctx):
 @main.command()
 @click.pass_obj
 def messagebar_static(ctx):
-    logger(message)
+    logger(ctx.message)
 
     with canvas(device) as draw:
-        text(draw, (0, 0), message, fill="white", font=proportional(TINY_FONT))
+        text(draw, (0, 0), ctx.message, fill="white", font=proportional(TINY_FONT))
     time.sleep(3)  #time in (s, seconds) to display the static text    
 
 def logger(message):
