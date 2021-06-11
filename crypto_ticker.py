@@ -154,7 +154,13 @@ def cryptoticker_endless(ctx):  # loop to infiniti
 @main.command()
 @click.pass_obj
 def messagebar_scrolling(ctx):
-    pass
+    logger(message)
+
+    serial = spi(port=0, device=0, gpio=noop())
+    device = max7219(serial, cascaded=4, block_orientation=-90, rotate=2, contrast=1)
+
+    for letter in range(set_range):
+        show_message(device, message, fill="white", font=proportional(TINY_FONT), scroll_delay=0.06)
 
 @main.command()
 @click.pass_obj
