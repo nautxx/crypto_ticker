@@ -162,7 +162,10 @@ def messagebar_static(ctx):
     pass
 
 def logger(message):
-    pass
+    path = Path(__file__).parent.absolute()
+    file = open(str(path) + "/message_log.txt", "a")
+    file.write("\n" + get_current_timestamp() + ": " + message)
+    file.close
 
 if __name__ == '__main__':
     main()
