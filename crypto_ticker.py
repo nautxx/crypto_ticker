@@ -11,6 +11,7 @@ system = platform.system() not in ['Darwin', 'Java', 'Windows']
 if system:  #skip luma load when using mac or windows operating systems
     from luma.led_matrix.device import max7219
     from luma.core.interface.serial import spi, noop
+    from luma.core.render import canvas
     from luma.core.legacy import text, show_message
     from luma.core.legacy.font import proportional, ATARI_FONT, CP437_FONT, \
         LCD_FONT, SEG7_FONT, SINCLAIR_FONT, SPECCY_FONT, TINY_FONT
@@ -157,11 +158,9 @@ def messagebar_scrolling(ctx):
     logger(ctx.message)
     print(ctx.message)
 
-    serial = spi(port=0, device=0, gpio=noop())
-    device = max7219(serial, cascaded=4, block_orientation=-90, rotate=2, contrast=1)
-
-    for letter in range(set_range):
-        show_message(device, ctx.message, fill="white", font=proportional(TINY_FONT), scroll_delay=0.06)
+    if system:
+        for letter in range(set_range):
+            show_message(device, ctx.message, fill="white", font=proportional(TINY_FONT), scroll_delay=0.06)
 
 @main.command()
 @click.pass_obj
@@ -169,9 +168,10 @@ def messagebar_static(ctx):
     logger(ctx.message)
     print(ctx.message)
 
-    with canvas(device) as draw:
-        text(draw, (0, 0), ctx.message, fill="white", font=proportional(TINY_FONT))
-    time.sleep(3)  #time in (s, seconds) to display the static text    
+    if system:
+        with canvas(device) as draw:
+            text(draw, (0, 0), ctx.message, fill="white", font=proportional(TINY_FONT))
+        time.sleep(3)  #time in (s, seconds) to display the static text
 
 def logger(message):
     path = Path(__file__).parent.absolute()
