@@ -6,6 +6,7 @@ import time
 from datetime import datetime, timedelta
 from config import config
 from pathlib import Path
+from color import Color
 
 system = platform.system() not in ['Darwin', 'Java', 'Windows']
 if system:  #skip luma load when using mac or windows operating systems
@@ -37,7 +38,7 @@ def main(ctx, coin, currency, apikey, message): #user stored values entered in c
 
 @click.pass_obj
 def parse_the_link(ctx):
-    link = config['link2'].format(ctx.coin, ctx.currency)
+    link = config['link'].format(ctx.coin, ctx.currency)
     if ctx.apikey is not None:
         link += "&api_key=" + ctx.apikey
     page = requests.get(link)
@@ -86,52 +87,52 @@ def get_data(link, spacing=1):
                     supply = link['RAW'][coin][currency]['SUPPLY']
 
                     if price <= 1 and price >= -1:
-                        price_short = '{0:,.8f}'.format(float(price))
+                        price_format = '{0:,.8f}'.format(float(price))
                     else:
-                        price_short = '{0:,.2f}'.format(float(price))
+                        price_format = '{0:,.2f}'.format(float(price))
 
                     if twenty_four_hour <= 1 and twenty_four_hour >=-1:
-                        twenty_four_hour_short = '{0:+,.8f}'.format(float(twenty_four_hour))
+                        twenty_four_hour_format = '{0:+,.8f}'.format(float(twenty_four_hour))
                     else:
-                        twenty_four_hour_short = '{0:+,.2f}'.format(float(twenty_four_hour))
+                        twenty_four_hour_format = '{0:+,.2f}'.format(float(twenty_four_hour))
 
                     if twenty_four_hour_pct <= 1 and twenty_four_hour_pct >=-1:
-                        twenty_four_hour_pct_short = '{0:+,.2f}'.format(float(twenty_four_hour_pct))
+                        twenty_four_hour_pct_format = '{0:+,.2f}'.format(float(twenty_four_hour_pct))
                     else:
-                        twenty_four_hour_pct_short = '{0:+,.2f}'.format(float(twenty_four_hour_pct))
+                        twenty_four_hour_pct_format = '{0:+,.2f}'.format(float(twenty_four_hour_pct))
 
-                    twenty_four_hour_pct_num = int(twenty_four_hour_pct)
+                    twenty_four_hour_pct_num = float(twenty_four_hour_pct)
                     if twenty_four_hour_pct_num >= 0:
-                        twenty_four_hour_symbol = '\x1b[38;5;12m'
-                        twenty_four_hour_color = '\x1b[38;5;12m'
+                        twenty_four_hour_symbol = Color.f.green
+                        twenty_four_hour_color = Color.f.green
                     else:
-                        twenty_four_hour_symbol = '\x1b[38;5;1m'
-                        twenty_four_hour_color = '\x1b[38;5;1m'
+                        twenty_four_hour_symbol = Color.f.red
+                        twenty_four_hour_color = Color.f.red
 
                     if hour <= 1 and hour >=-1:
-                        hour_short = '{0:+,.8f}'.format(float(hour))
+                        hour_format = '{0:+,.8f}'.format(float(hour))
                     else:
-                        hour_short = '{0:+,.2f}'.format(float(hour))
+                        hour_format = '{0:+,.2f}'.format(float(hour))
 
                     if hour_pct <= 1 and hour_pct >=-1:
-                        hour_pct_short = '{0:+,.2f}'.format(float(hour_pct))
+                        hour_pct_format = '{0:+,.2f}'.format(float(hour_pct))
                     else:
-                        hour_pct_short = '{0:+,.2f}'.format(float(hour_pct))
+                        hour_pct_format = '{0:+,.2f}'.format(float(hour_pct))
                         
-                    hour_pct_num = int(hour_pct)
+                    hour_pct_num = float(hour_pct)
                     if hour_pct_num >= 0:
-                        hour_symbol = '\x1b[38;5;12m'
-                        hour_color = '\x1b[38;5;12m'
+                        hour_symbol = Color.f.green
+                        hour_color = Color.f.green
                     else:
-                        hour_symbol = '\x1b[38;5;1m'
-                        hour_color = '\x1b[38;5;1m'
+                        hour_symbol = Color.f.red
+                        hour_color = Color.f.red
 
-            output += '\x1b[0;5;37m' + str(coin + '-' + currency_symbol).ljust(12,' ') \
-                    + str(price_short).rjust(12,' ') + '\t' + twenty_four_hour_color \
-                    + str(twenty_four_hour_short).rjust(12,' ') + '\t' + twenty_four_hour_symbol \
-                    + str('(' + twenty_four_hour_pct_short + '%)').rjust(10,' ') \
-                    + str(hour_short).rjust(12,' ') + '\t' + hour_symbol \
-                    + str('(' + hour_pct_short + '%)').rjust(10,' ') + '\x1b[0m' \
+            output += str(coin + '-' + currency_symbol).ljust(12,' ') \
+                    + str(price_format).rjust(12,' ') + '\t' + twenty_four_hour_color \
+                    + str(twenty_four_hour_format).rjust(12,' ') + '\t' \
+                    + str('(' + twenty_four_hour_pct_format + '%)').rjust(10,' ') + hour_color \
+                    + str(hour_format).rjust(12,' ') + '\t' \
+                    + str('(' + hour_pct_format + '%)').rjust(10,' ') + Color.end \
                     + str(last_update + '\n').rjust(24,' ')
     return output, output_display
 
