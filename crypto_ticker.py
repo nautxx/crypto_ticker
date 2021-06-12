@@ -10,31 +10,32 @@ from color import Color
 
 system = platform.system() not in ['Darwin', 'Java', 'Windows']
 if system:  #skip luma load when using mac or windows operating systems
-    from luma.led_matrix.device import max7219
     from luma.core.interface.serial import spi, noop
     from luma.core.render import canvas
     from luma.core.legacy import text, show_message
-    from luma.core.legacy.font import proportional, ATARI_FONT, CP437_FONT, \
-        LCD_FONT, SEG7_FONT, SINCLAIR_FONT, SPECCY_FONT, TINY_FONT
+    from luma.core.legacy.font import proportional, ATARI_FONT, CP437_FONT, LCD_FONT, SEG7_FONT, SINCLAIR_FONT, SPECCY_FONT, TINY_FONT
+    from luma.led_matrix.device import max7219
 
     serial = spi(port=0, device=0, gpio=noop())
     device = max7219(serial, cascaded=4, block_orientation=-90, rotate=2, contrast=1)
 
 class User(object): #initialize user data
-    def __init__(self, coin=None, currency=None, apikey=None, message=None):
+    def __init__(self, coin=None, currency=None, apikey=None, message=None, count=1):
         self.coin = coin
         self.currency = currency
         self.apikey = apikey
         self.message = message
+        self.count = count
 
 @click.group()
 @click.option('--coin', default='BTC', help='Crypto ticker symbol. Multiple ticker symbols separate with comma')
 @click.option('--currency', default='USD', help='Currency. Multiple currencies separate with comma')
 @click.option('--apikey', default=None, help='Enter API key from cryptocompare.com')
-@click.option('--message', default=None, help='Custom message to display for message_bar')
+@click.option('--message', prompt='Your message', help='Enter message to display for message_bar')
+@click.option('--count', default=1, help='Number of times to display')
 @click.pass_context
-def main(ctx, coin, currency, apikey, message): #user stored values entered in cli
-    ctx.obj = User(coin, currency, apikey, message)
+def main(ctx, coin, currency, apikey, message, count): #user stored values entered in cli
+    ctx.obj = User(coin, currency, apikey, message, count)
 
 @click.pass_obj
 def parse_the_link(ctx):
@@ -101,12 +102,9 @@ def get_data(link, spacing=1):
                     else:
                         twenty_four_hour_pct_format = '{0:+,.2f}'.format(float(twenty_four_hour_pct))
 
-                    twenty_four_hour_pct_num = float(twenty_four_hour_pct)
-                    if twenty_four_hour_pct_num >= 0:
-                        twenty_four_hour_symbol = Color.f.green
+                    if float(twenty_four_hour_pct) >= 0:
                         twenty_four_hour_color = Color.f.green
                     else:
-                        twenty_four_hour_symbol = Color.f.red
                         twenty_four_hour_color = Color.f.red
 
                     if hour <= 1 and hour >=-1:
@@ -119,26 +117,29 @@ def get_data(link, spacing=1):
                     else:
                         hour_pct_format = '{0:+,.2f}'.format(float(hour_pct))
                         
-                    hour_pct_num = float(hour_pct)
-                    if hour_pct_num >= 0:
-                        hour_symbol = Color.f.green
+                    if float(hour_pct) >= 0:
                         hour_color = Color.f.green
                     else:
-                        hour_symbol = Color.f.red
                         hour_color = Color.f.red
 
             output += str(coin + '-' + currency_symbol).ljust(12,' ') \
                     + str(price_format).rjust(12,' ') + '\t' + twenty_four_hour_color \
-                    + str(twenty_four_hour_format).rjust(12,' ') + '\t' \
+                    + str(twenty_four_hour_format).rjust(12,' ') + '\t'\
                     + str('(' + twenty_four_hour_pct_format + '%)').rjust(10,' ') + hour_color \
                     + str(hour_format).rjust(12,' ') + '\t' \
                     + str('(' + hour_pct_format + '%)').rjust(10,' ') + Color.end \
                     + str(last_update + '\n').rjust(24,' ')
+
+            output_display += str(str(coin + '-' + currency_symbol + ": ")).lower() + str(price_format) \
+                    + str(' ' + hour_format + '    ')
+
     return output, output_display
 
-def ticker_display(set_range=1):
-    for tick in range(set_range):
-        show_message(device, ticker_message, y_offset=0, fill='white', font=proportional(TINY_FONT), scroll_delay=0.06)
+def logger(message):
+    path = Path(__file__).parent.absolute()
+    file = open(str(path) + "/message_log.txt", "a")
+    file.write("\n" + get_current_timestamp() + ": " + message)
+    file.close
 
 @main.command()
 @click.pass_obj
@@ -150,35 +151,31 @@ def cryptoticker_endless(ctx):  # loop to infiniti
         print("Next Update: ".lower(), get_next_timestamp())
         print("Press 'Ctrl + C' to exit")
         if system:
-            ticker_display()
+            for tick in range(ctx.count):
+                show_message(device, message, y_offset=0, fill='white', font=proportional(TINY_FONT), scroll_delay=0.06)
         time.sleep(config['frequency'])   # loop time delay in (s, seconds)
 
 @main.command()
 @click.pass_obj
 def messagebar_scrolling(ctx):
     logger(ctx.message)
-    print(ctx.message)
+    print('"' + ctx.message + '" sent successfully.')
 
     if system:
-        for letter in range(set_range):
-            show_message(device, ctx.message, fill="white", font=proportional(TINY_FONT), scroll_delay=0.06)
+        for letter in range(ctx.count):
+            show_message(device, ctx.message, fill='white', font=proportional(TINY_FONT), scroll_delay=0.06)
 
 @main.command()
 @click.pass_obj
 def messagebar_static(ctx):
     logger(ctx.message)
-    print(ctx.message)
+    print('"' + ctx.message + '" sent successfully.')
 
     if system:
         with canvas(device) as draw:
-            text(draw, (0, 0), ctx.message, fill="white", font=proportional(TINY_FONT))
-        time.sleep(3)  #time in (s, seconds) to display the static text
+            text(draw, (0, 0), ctx.message, fill='white', font=proportional(TINY_FONT))
+        time.sleep(ctx.count)  #time in (s, seconds) to display the static text
 
-def logger(message):
-    path = Path(__file__).parent.absolute()
-    file = open(str(path) + "/message_log.txt", "a")
-    file.write("\n" + get_current_timestamp() + ": " + message)
-    file.close
 
 if __name__ == '__main__':
     main()
