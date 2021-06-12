@@ -1,5 +1,6 @@
 class Color:
     end = "\x1b[0m"
+    # foreground colors
     class f:
         # standard colors
         default =  "\x1b[38;5;0m"
@@ -20,6 +21,7 @@ class Color:
         light_magenta = "\x1b[38;5;13m"
         light_cyan = "\x1b[38;5;14m"
         white = "\x1b[38;5;15m"
+    # background colors
     class b:
         # standard colors
         default =  "\x1b[48;5;0m"
