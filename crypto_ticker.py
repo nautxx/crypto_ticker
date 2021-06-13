@@ -146,8 +146,16 @@ def messagebar_scrolling(ctx):
     print('"' + ctx.message + '" sent successfully.')
 
     if system:
-        for letter in range(ctx.count):
-            show_message(device, ctx.message, fill='white', font=proportional(TINY_FONT), scroll_delay=0.06)
+        label = 'Displaying'
+        fill_char = click.style('#', fg='green')
+        empty_char = click.style('-', fg='white', dim=True)
+        length = 100
+
+        with click.progressbar(label=label, length=length, fill_char=fill_char, empty_char=empty_char, show_eta=False) as bar:
+            bar.update(0)
+            for letter in range(ctx.count):
+                show_message(device, ctx.message, fill='white', font=proportional(TINY_FONT), scroll_delay=0.06)
+                bar.update(length/ctx.count)
 
 @main.command()
 @click.pass_obj
@@ -158,7 +166,15 @@ def messagebar_static(ctx):
     if system:
         with canvas(device) as draw:
             text(draw, (0, 0), ctx.message, fill='white', font=proportional(TINY_FONT))
-        time.sleep(ctx.count)  #time in (s, seconds) to display the static text
+        
+        iterable = range(ctx.count)
+        label = 'Displaying'
+        fill_char = click.style('#', fg='green')
+        empty_char = click.style('-', fg='white', dim=True)
+
+        with click.progressbar(iterable=iterable, label=label, fill_char=fill_char, empty_char=empty_char) as items:
+            for item in items:                
+                time.sleep(0.23)  #time in (s, seconds) to display the static text
 
 
 if __name__ == '__main__':
