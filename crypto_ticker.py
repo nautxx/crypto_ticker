@@ -53,22 +53,6 @@ def get_next_timestamp():
     timestamp = (datetime.now() + timedelta(seconds=config['frequency'])).strftime("%Y.%m.%d %H:%M")
     return timestamp
 
-def get_prices(link, spacing=1):
-    prices, prices_display, spaces = '','',''
-
-    for space in range(spacing):
-        spaces += ' '
-
-    for coin in link:
-        for currency in link[coin]:
-            price = link[coin][currency]
-            price_formatted = "{:,}".format(price)
-            if coin != currency:
-                prices += "{0}-{1}: {2}".format(coin, currency, price_formatted).lower() + '\t' + get_current_timestamp() + "\n"
-                prices_display += "{0}-{1}: {2}{3}".format(coin, currency, price_formatted, spaces).lower()
-
-    return prices, prices_display
-
 def get_data(link, spacing=1):
     output, output_display = '', ''
     for coin in link['RAW']:
