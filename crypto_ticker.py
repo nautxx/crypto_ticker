@@ -19,7 +19,7 @@ if system:  #skip luma load when using mac or windows operating systems
     serial = spi(port=0, device=0, gpio=noop())
     device = max7219(serial, cascaded=4, block_orientation=-90, rotate=2, contrast=1)
 
-class User(object): #initialize user data
+class User(object): # initialize user data
     def __init__(self, coin=None, currency=None, apikey=None, message=None, count=1):
         self.coin = coin
         self.currency = currency
@@ -32,9 +32,9 @@ class User(object): #initialize user data
 @click.option('--currency', default='USD', help='Currency. Multiple currencies separate with comma')
 @click.option('--apikey', default=None, help='Enter API key from cryptocompare.com')
 @click.option('--message', prompt='Your message', help='Enter message to display for message_bar')
-@click.option('--count', default=1, help='Number of times to display')
+@click.option('--count', default=1, help='Scrolling: Number of times to loop display. Static: Time in seconds to display')
 @click.pass_context
-def main(ctx, coin, currency, apikey, message, count): #user stored values entered in cli
+def main(ctx, coin, currency, apikey, message, count):  # user stored values entered in cli
     ctx.obj = User(coin, currency, apikey, message, count)
 
 @click.pass_obj
@@ -143,7 +143,7 @@ def cryptoticker_endless(ctx):  # loop to infiniti
 @click.pass_obj
 def messagebar_scrolling(ctx):
     logger(ctx.message)
-    print('"' + ctx.message + '" sent successfully.')
+    print('Message "' + ctx.message + '" sent successfully.')
 
     if system:
         label = 'Displaying'
@@ -161,20 +161,21 @@ def messagebar_scrolling(ctx):
 @click.pass_obj
 def messagebar_static(ctx):
     logger(ctx.message)
-    print('"' + ctx.message + '" sent successfully.')
+    print('Message "' + ctx.message + '" sent successfully.')
 
     if system:
         with canvas(device) as draw:
             text(draw, (0, 0), ctx.message, fill='white', font=proportional(TINY_FONT))
         
-        iterable = range(ctx.count)
+        refresh = 10
+        iterable = range(ctx.count * refresh)
         label = 'Displaying'
         fill_char = click.style('#', fg='green')
         empty_char = click.style('-', fg='white', dim=True)
 
-        with click.progressbar(iterable=iterable, label=label, fill_char=fill_char, empty_char=empty_char) as items:
-            for item in items:                
-                time.sleep(0.23)  #time in (s, seconds) to display the static text
+        with click.progressbar(iterable=iterable, label=label, fill_char=fill_char, empty_char=empty_char) as bar:
+            for tick in bar:                
+                time.sleep(1/refresh)
 
 
 if __name__ == '__main__':
