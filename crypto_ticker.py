@@ -173,10 +173,12 @@ def messagebar_static(ctx):
         fill_char = click.style('#', fg='green')
         empty_char = click.style('-', fg='white', dim=True)
 
+        print('Message "' + ctx.message + '" sent successfully.')
         with click.progressbar(iterable=iterable, label=label, fill_char=fill_char, empty_char=empty_char) as bar:
             for tick in bar:                
                 time.sleep(1/refresh)
-
+    else:
+        print('Message "' + ctx.message + '" has been logged successfully.')
 
 if __name__ == '__main__':
     main()
