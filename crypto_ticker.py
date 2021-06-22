@@ -94,9 +94,9 @@ def get_data(link):
                         twenty_four_hour_pct_format = '{0:+,.2f}'.format(float(twenty_four_hour_pct))
 
                     if float(twenty_four_hour_pct) >= 0:
-                        twenty_four_hour_color = Color.f.green
+                        twenty_four_hour_color = Color.fg.green
                     else:
-                        twenty_four_hour_color = Color.f.red
+                        twenty_four_hour_color = Color.fg.red
 
                     if hour <= 1 and hour >=-1:
                         hour_format = '{0:+,.8f}'.format(float(hour))
@@ -109,9 +109,9 @@ def get_data(link):
                         hour_pct_format = '{0:+,.2f}'.format(float(hour_pct))
                         
                     if float(hour_pct) >= 0:
-                        hour_color = Color.f.green
+                        hour_color = Color.fg.green
                     else:
-                        hour_color = Color.f.red
+                        hour_color = Color.fg.red
 
             output += str(coin + '-' + currency_symbol).ljust(12,' ') \
                     + str(price_format).rjust(12,' ') + '\t' + twenty_four_hour_color \
