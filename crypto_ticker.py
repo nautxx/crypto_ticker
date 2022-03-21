@@ -21,7 +21,12 @@ if system:
     device = max7219(serial, cascaded=4, block_orientation=-90, rotate=2, contrast=1)
 
 class User(object): # initialize user data
-    def __init__(self, coin=None, currency=None, apikey=None, message=None, count=1):
+    def __init__(self,
+                 coin = None,
+                 currency = None,
+                 apikey = None,
+                 message = None,
+                 count = 1):
         self.coin = coin
         self.currency = currency
         self.apikey = apikey
@@ -113,16 +118,16 @@ def get_data(link):
                     else:
                         hour_color = Color.fg.red
 
-            output += str(coin + '-' + currency_symbol).ljust(12,' ') \
-                    + str(price_format).rjust(12,' ') + '\t' + twenty_four_hour_color \
-                    + str(twenty_four_hour_format).rjust(12,' ') + '\t'\
-                    + str('(' + twenty_four_hour_pct_format + '%)').rjust(10,' ') + hour_color \
-                    + str(hour_format).rjust(12,' ') + '\t' \
-                    + str('(' + hour_pct_format + '%)').rjust(10,' ') + Color.end \
-                    + str(last_update + '\n').rjust(24,' ')
+            output += str(coin + '-' + currency_symbol).ljust(12,' ')
+            + str(price_format).rjust(12,' ') + '\t' + twenty_four_hour_color
+            + str(twenty_four_hour_format).rjust(12,' ') + '\t'
+            + str('(' + twenty_four_hour_pct_format + '%)').rjust(10,' ') + hour_color
+            + str(hour_format).rjust(12,' ') + '\t'
+            + str('(' + hour_pct_format + '%)').rjust(10,' ') + Color.end
+            + str(last_update + '\n').rjust(24,' ')
 
-            output_display += str(str(coin + '-' + currency_symbol + ": ")).lower() + str(price_format) \
-                    + str(' ' + hour_format + '    ')
+            output_display += str(str(coin + '-' + currency_symbol + ": ")).lower()
+            + str(price_format) + str(' ' + hour_format + '    ')
 
     return output, output_display
 
@@ -186,9 +191,12 @@ def messagebar_static(ctx):
         empty_char = click.style('-', fg='white', dim=True)
 
         print('Message "' + ctx.message + '" sent successfully.')
-        with click.progressbar(iterable=iterable, label=label, fill_char=fill_char, empty_char=empty_char) as bar:
+        with click.progressbar(iterable = iterable,
+                               label = label,
+                               fill_char = fill_char,
+                               empty_char = empty_char) as bar:
             for tick in bar:                
-                time.sleep(1/refresh)
+                time.sleep(1 / refresh)
     else:
         print('Message "' + ctx.message + '" has been logged successfully.')
 
