@@ -10,7 +10,7 @@ from color import Color
 
 # skips luma libraries from loading when using mac or windows operating systems
 system = platform.system() not in ['Darwin', 'Java', 'Windows']
-if system:  
+if system:
     from luma.core.interface.serial import spi, noop
     from luma.core.render import canvas
     from luma.core.legacy import text, show_message
@@ -18,15 +18,24 @@ if system:
     from luma.led_matrix.device import max7219
 
     serial = spi(port=0, device=0, gpio=noop())
-    device = max7219(serial, cascaded=4, block_orientation=-90, rotate=2, contrast=1)
+    device = max7219(
+        serial, 
+        cascaded=4, 
+        block_orientation=-90, 
+        rotate=2, 
+        contrast=1
+    )
 
-class User(object): # initialize user data
-    def __init__(self,
-                 coin = None,
-                 currency = None,
-                 apikey = None,
-                 message = None,
-                 count = 1):
+class User(object): 
+    """Initializes user data"""
+    def __init__(
+        self,
+        coin = None,
+        currency = None,
+        apikey = None,
+        message = None,
+        count = 1
+    ):
         self.coin = coin
         self.currency = currency
         self.apikey = apikey
@@ -34,11 +43,26 @@ class User(object): # initialize user data
         self.count = count
 
 @click.group()
-@click.option('--coin', default='BTC', help='Crypto ticker symbol. Multiple ticker symbols separate with comma')
-@click.option('--currency', default='USD', help='Currency. Multiple currencies separate with comma')
-@click.option('--apikey', default=None, help='Enter API key from cryptocompare.com')
-@click.option('--message', default=None, help='Enter message to display for message_bar')
-@click.option('--count', default=1, help='Scrolling: Number of times to loop display. Static: Time in seconds to display')
+@click.option('--coin', 
+    default='BTC', 
+    help='Crypto ticker symbol. Multiple ticker symbols separate with comma'
+)
+@click.option('--currency', 
+    default='USD', 
+    help='Currency. Multiple currencies separate with comma'
+)
+@click.option('--apikey', 
+    default=None, 
+    help='Enter API key from cryptocompare.com'
+)
+@click.option('--message', 
+    default=None, 
+    help='Enter message to display for message_bar'
+)
+@click.option('--count', 
+    default=1, 
+    help='Scrolling: Number of times to loop display. Static: Time in seconds to display'
+)
 @click.pass_context
 # user stored values entered in cli
 def main(ctx, coin, currency, apikey, message, count):
@@ -65,6 +89,7 @@ def get_next_timestamp():
     timestamp = (datetime.now() + timedelta(seconds=config['frequency'])).strftime("%Y.%m.%d %H:%M:%S")
     return timestamp
 
+#TODO move to crypto_data.py
 def get_data(link):
     output, output_display = '', ''
     for coin in link['RAW']:
@@ -118,15 +143,15 @@ def get_data(link):
                     else:
                         hour_color = Color.fg.red
 
-            output += str(coin + '-' + currency_symbol).ljust(12,' ')
-            + str(price_format).rjust(12,' ') + '\t' + twenty_four_hour_color
-            + str(twenty_four_hour_format).rjust(12,' ') + '\t'
-            + str('(' + twenty_four_hour_pct_format + '%)').rjust(10,' ') + hour_color
-            + str(hour_format).rjust(12,' ') + '\t'
-            + str('(' + hour_pct_format + '%)').rjust(10,' ') + Color.end
-            + str(last_update + '\n').rjust(24,' ')
+            output += str(coin + '-' + currency_symbol).ljust(12,' ') \
+            + str(price_format).rjust(12,' ') + '\t' + twenty_four_hour_color \
+            + str(twenty_four_hour_format).rjust(12,' ') + '\t'\
+            + str('(' + twenty_four_hour_pct_format + '%)').rjust(10,' ') + hour_color \
+            + str(hour_format).rjust(12,' ') + '\t' \
+            + str('(' + hour_pct_format + '%)').rjust(10,' ') + Color.end \
+            + str(last_update + '\n').rjust(24,' ') \
 
-            output_display += str(str(coin + '-' + currency_symbol + ": ")).lower()
+            output_display += str(str(coin + '-' + currency_symbol + ": ")).lower() \
             + str(price_format) + str(' ' + hour_format + '    ')
 
     return output, output_display
