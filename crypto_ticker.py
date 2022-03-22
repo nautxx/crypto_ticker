@@ -26,6 +26,8 @@ if system:
         contrast=1
     )
 
+CRYPTOCOMPARE_ENDPOINT = "https://min-api.cryptocompare.com/data/pricemultifull"
+
 class User(object): 
     """Initializes user data"""
     def __init__(
@@ -69,29 +71,30 @@ def main(ctx, coin, currency, apikey, message, count):
     ctx.obj = User(coin, currency, apikey, message, count)
 
 @click.pass_obj
-def parse_the_link(ctx):
-    link = config['link'].format(ctx.coin, ctx.currency)
-    # checks if api key is entered in cli or saved in config.py
-    if ctx.apikey is not None:
-        link += "&api_key=" + ctx.apikey
-    elif config['api_key'] != "":
-        link += "&api_key=" + config['api_key']
-
-    page = requests.get(link)
-    page_parsed = json.loads(page.text)
-    return page_parsed
+def get_crypto_data(ctx):
+    headers = {"api_key": ctx.apikey}
+    query = {"fsyms": ctx.coin, "tsyms": ctx.currency}
+    response = requests.get(
+        url=f"{CRYPTOCOMPARE_ENDPOINT}",
+        headers=headers,
+        params=query
+    )
+    data = response.json()
+    return data
 
 def get_current_timestamp():
-    timestamp = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
+    timestamp = datetime.now()
+    timestamp_formatted = timestamp.strftime("%Y.%m.%d %H:%M:%S")
     return timestamp
 
 def get_next_timestamp():
-    timestamp = (datetime.now() + timedelta(seconds=config['frequency'])).strftime("%Y.%m.%d %H:%M:%S")
-    return timestamp
+    next_time_stamp = (datetime.now() + timedelta(seconds=config['frequency']))
+    next_time_stamp_formatted = next_time_stamp.strftime("%Y.%m.%d %H:%M:%S")
+    return next_time_stamp
 
 #TODO move to crypto_data.py
 def get_data(link):
-    output, output_display = '', ''
+    output, output_display = "", ""
     for coin in link['RAW']:
         for currency in link['RAW'][coin]:
             if coin != currency:
@@ -166,7 +169,7 @@ def logger(message, function):
 @click.pass_obj
 def cryptoticker_endless(ctx):  # loop to infiniti
     while True:
-        parsed_link = parse_the_link()
+        parsed_link = get_crypto_data()
         terminal_message, ticker_message = get_data(parsed_link)
         print('\n' + "           \t   Price                24hr           pct         1hr         pct            Last update" + '\n' + terminal_message)
         print("Next Update: ".lower(), get_next_timestamp())
