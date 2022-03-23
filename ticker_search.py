@@ -12,6 +12,7 @@ class TickerSearch:
         for coin in data['RAW']:
             for currency in data['RAW'][coin]:
                 if coin != currency:
+                    print(coin, currency)
                     for category in data['RAW'][coin][currency]:
                         ticker_data = TickerData(
                             currency_symbol=data['RAW'][coin][currency]['TOSYMBOL'], 
@@ -92,16 +93,16 @@ class TickerSearch:
                         else:
                             hour_color = Color.fg.red
                             
-                coin_to_currency = str(coin + '-' + ticker_data.currency_symbol)
-                output += coin_to_currency.ljust(12,' ') \
-                + str(price_format).rjust(12,' ') + '\t' + twenty_four_hour_color \
-                + str(twenty_four_hour_format).rjust(12,' ') + '\t'\
-                + str('(' + twenty_four_hour_pct_format + '%)').rjust(10,' ') + hour_color \
-                + str(hour_format).rjust(12,' ') + '\t' \
-                + str('(' + hour_pct_format + '%)').rjust(10,' ') + Color.end \
-                + str(ticker_data.last_update + '\n').rjust(24,' ') \
+                    coin_to_currency = str(coin + '-' + ticker_data.currency_symbol)
+                    output += coin_to_currency.ljust(12,' ') \
+                    + str(price_format).rjust(12,' ') + '\t' + twenty_four_hour_color \
+                    + str(twenty_four_hour_format).rjust(12,' ') + '\t'\
+                    + str('(' + twenty_four_hour_pct_format + '%)').rjust(10,' ') + hour_color \
+                    + str(hour_format).rjust(12,' ') + '\t' \
+                    + str('(' + hour_pct_format + '%)').rjust(10,' ') + Color.end \
+                    + str(ticker_data.last_update + '\n').rjust(24,' ') \
 
-                output_display += str(coin_to_currency + ": ").lower() \
-                + str(price_format) + str(' ' + hour_format + '    ')
+                    output_display += str(coin_to_currency + ": ").lower() \
+                    + str(price_format) + str(' ' + hour_format + '    ')
 
         return output, output_display
