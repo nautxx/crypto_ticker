@@ -148,7 +148,13 @@ def messagebar_static(ctx):
 
     if system:
         with canvas(device) as draw:
-            text(draw, (0, 0), ctx.message, fill='white', font=proportional(TINY_FONT))
+            text(
+                draw, 
+                (0, 0), 
+                tx.message,
+                fill='white', 
+                font=proportional(TINY_FONT)
+            )
         
         refresh = 10
         iterable = range(ctx.count * refresh)
@@ -157,10 +163,12 @@ def messagebar_static(ctx):
         empty_char = click.style('-', fg='white', dim=True)
 
         print('Message "' + ctx.message + '" sent successfully.')
-        with click.progressbar(iterable = iterable,
-                               label = label,
-                               fill_char = fill_char,
-                               empty_char = empty_char) as bar:
+        with click.progressbar(
+            iterable = iterable,
+            label = label,
+            fill_char = fill_char,
+            empty_char = empty_char
+        ) as bar:
             for tick in bar:                
                 time.sleep(1 / refresh)
     else:
