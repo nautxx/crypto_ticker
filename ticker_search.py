@@ -12,7 +12,6 @@ class TickerSearch:
         for coin in data['RAW']:
             for currency in data['RAW'][coin]:
                 if coin != currency:
-                    print(coin, currency)
                     for category in data['RAW'][coin][currency]:
                         ticker_data = TickerData(
                             currency_symbol=data['RAW'][coin][currency]['TOSYMBOL'], 
@@ -88,6 +87,7 @@ class TickerSearch:
                                 hour_pct_format = "▼" + str(hour_pct_format)
                             else:
                                 hour_pct_format = "▲" + str(hour_pct_format)
+                        
                         if float(ticker_data.hour_change_pct) >= 0:
                             hour_color = Color.fg.green
                         else:
