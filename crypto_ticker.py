@@ -3,7 +3,6 @@ import click
 import json
 import time
 from datetime import datetime, timedelta
-from config import config
 from pathlib import Path
 from ticker_search import TickerSearch
 
@@ -88,9 +87,12 @@ def cryptoticker_endless(ctx):
     while True:
         # data = get_crypto_data()
         terminal_message, ticker_message = ticker_search.compare_crypto(ctx.apikey, ctx.coin, ctx.currency)
-        print('\n' + "           \t   Price                24hr           pct         1hr         pct            Last update" + '\n' + terminal_message)
-        print("Next Update: ".lower(), get_next_update_timestamp())
-        print("Press 'Ctrl + C' to exit")
+        header = '\n' + "           \t   Price                24hr           pct         1hr         pct            Last update" + '\n'
+        footer = "Next Update: ".lower() + str(get_next_update_timestamp())\
+            + "\nPress 'Ctrl + C' to exit"
+        print(header + terminal_message)
+        print(footer)
+        # print("Press 'Ctrl + C' to exit")
         if system:
             for tick in range(ctx.count):
                 show_message(
