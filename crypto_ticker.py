@@ -92,7 +92,6 @@ def cryptoticker_endless(ctx):
             + "\nPress 'Ctrl + C' to exit"
         print(header + terminal_message)
         print(footer)
-        # print("Press 'Ctrl + C' to exit")
         if system:
             for tick in range(ctx.count):
                 show_message(
