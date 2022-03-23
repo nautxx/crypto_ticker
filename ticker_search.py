@@ -33,21 +33,29 @@ class TickerSearch:
 
                         if ticker_data.twenty_four_hour_change <= 1 and ticker_data.twenty_four_hour_change >=-1:
                             twenty_four_hour_format = '{0:,.8f}'.format(abs(float(ticker_data.twenty_four_hour_change)))
-                            if float(ticker_data.twenty_four_hour_change_pct) >= 0:
-                                twenty_four_hour_format = "▲" + str(twenty_four_hour_format)
-                            else:
+                            if float(ticker_data.twenty_four_hour_change_pct) < 0:
                                 twenty_four_hour_format = "▼" + str(twenty_four_hour_format)
+                            else:
+                                twenty_four_hour_format = "▲" + str(twenty_four_hour_format)
                         else:
                             twenty_four_hour_format = '{0:,.2f}'.format(abs(float(ticker_data.twenty_four_hour_change)))
-                            if float(ticker_data.twenty_four_hour_change_pct) >= 0:
-                                twenty_four_hour_format = "▲" + str(twenty_four_hour_format)
-                            else:
+                            if float(ticker_data.twenty_four_hour_change_pct) < 0:
                                 twenty_four_hour_format = "▼" + str(twenty_four_hour_format)
+                            else:
+                                twenty_four_hour_format = "▲" + str(twenty_four_hour_format)
                                 
                         if ticker_data.twenty_four_hour_change_pct <= 1 and ticker_data.twenty_four_hour_change_pct >=-1:
-                            twenty_four_hour_pct_format = '{0:+,.2f}'.format(float(ticker_data.twenty_four_hour_change_pct))
+                            twenty_four_hour_pct_format = '{0:,.2f}'.format(abs(float(ticker_data.twenty_four_hour_change_pct)))
+                            if float(ticker_data.twenty_four_hour_change_pct) < 0:
+                                twenty_four_hour_pct_format = "▼" + str(twenty_four_hour_pct_format)
+                            else:
+                                twenty_four_hour_pct_format = "▲" + str(twenty_four_hour_pct_format)
                         else:
-                            twenty_four_hour_pct_format = '{0:+,.2f}'.format(float(ticker_data.twenty_four_hour_change_pct))
+                            twenty_four_hour_pct_format = '{0:,.2f}'.format(abs(float(ticker_data.twenty_four_hour_change_pct)))
+                            if float(ticker_data.twenty_four_hour_change_pct) < 0:
+                                twenty_four_hour_pct_format = "▼" + str(twenty_four_hour_pct_format)
+                            else:
+                                twenty_four_hour_pct_format = "▲" + str(twenty_four_hour_pct_format)
 
                         if float(ticker_data.twenty_four_hour_change_pct) >= 0:
                             twenty_four_hour_color = Color.fg.green
