@@ -1,13 +1,25 @@
+import requests
 from datetime import datetime, timedelta
 from color import Color
 from ticker_data import TickerData
+
+CRYPTOCOMPARE_ENDPOINT = "https://min-api.cryptocompare.com/data/pricemultifull"
 
 class TickerSearch:
     def __init__(self):
         pass
 
-    def compare_crypto(self, data):
+    def compare_crypto(self, api_key, coin, currency):
         output, output_display = "", ""
+
+        headers = {"api_key": api_key}
+        query = {"fsyms": coin, "tsyms": currency}
+        response = requests.get(
+            url=f"{CRYPTOCOMPARE_ENDPOINT}",
+            headers=headers,
+            params=query
+        )
+        data = response.json()
 
         for coin in data['RAW']:
             for currency in data['RAW'][coin]:

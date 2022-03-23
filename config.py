@@ -1,3 +1,0 @@
-config = {
-    "frequency": 300
-}
