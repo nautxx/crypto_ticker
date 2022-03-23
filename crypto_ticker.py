@@ -85,7 +85,6 @@ def cryptoticker_endless(ctx):
     """
     ticker_search = TickerSearch()
     while True:
-        # data = get_crypto_data()
         terminal_message, ticker_message = ticker_search.compare_crypto(ctx.apikey, ctx.coin, ctx.currency)
         header = '\n' + "           \t   Price                24hr           pct         1hr         pct            Last update" + '\n'
         footer = "Next Update: ".lower() + str(get_next_update_timestamp())\
