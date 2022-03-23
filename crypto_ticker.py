@@ -1,10 +1,8 @@
 import platform
 import click
-import requests
 import json
 import time
 from datetime import datetime, timedelta
-from config import config
 from pathlib import Path
 from ticker_search import TickerSearch
 
@@ -26,7 +24,7 @@ if system:
         contrast=1
     )
 
-CRYPTOCOMPARE_ENDPOINT = "https://min-api.cryptocompare.com/data/pricemultifull"
+DELAY = 300
 
 class User(object): 
     """Initializes user data input from command line."""
@@ -63,25 +61,13 @@ class User(object):
 def main(ctx, coin, currency, apikey, message, count):
     ctx.obj = User(coin, currency, apikey, message, count)
 
-@click.pass_obj
-def get_crypto_data(ctx):
-    headers = {"api_key": ctx.apikey}
-    query = {"fsyms": ctx.coin, "tsyms": ctx.currency}
-    response = requests.get(
-        url=f"{CRYPTOCOMPARE_ENDPOINT}",
-        headers=headers,
-        params=query
-    )
-    data = response.json()
-    return data
-
 def get_current_timestamp():
     timestamp = datetime.now()
     timestamp_formatted = timestamp.strftime("%Y.%m.%d %H:%M:%S")
     return timestamp
 
 def get_next_update_timestamp():
-    next_time_stamp = (datetime.now() + timedelta(seconds=config['frequency']))
+    next_time_stamp = (datetime.now() + timedelta(seconds=DELAY))
     next_time_stamp_formatted = next_time_stamp.strftime("%Y.%m.%d %H:%M:%S")
     return next_time_stamp
 
@@ -99,11 +85,12 @@ def cryptoticker_endless(ctx):
     """
     ticker_search = TickerSearch()
     while True:
-        data = get_crypto_data()
-        terminal_message, ticker_message = ticker_search.compare_crypto(data)
-        print('\n' + "           \t   Price                24hr           pct         1hr         pct            Last update" + '\n' + terminal_message)
-        print("Next Update: ".lower(), get_next_update_timestamp())
-        print("Press 'Ctrl + C' to exit")
+        terminal_message, ticker_message = ticker_search.compare_crypto(ctx.apikey, ctx.coin, ctx.currency)
+        header = '\n' + "           \t   Price                24hr           pct         1hr         pct            Last update" + '\n'
+        footer = "Next Update: ".lower() + str(get_next_update_timestamp())\
+            + "\nPress 'Ctrl + C' to exit"
+        print(header + terminal_message)
+        print(footer)
         if system:
             for tick in range(ctx.count):
                 show_message(
@@ -114,7 +101,7 @@ def cryptoticker_endless(ctx):
                     font=proportional(TINY_FONT),
                     scroll_delay=0.06
                 )
-        time.sleep(config['frequency'])   # loop time delay in (s, seconds)
+        time.sleep(DELAY)   # loop time delay in (s, seconds)
 
 @main.command()
 @click.pass_obj
@@ -130,16 +117,23 @@ def messagebar_scrolling(ctx):
         length = 100
 
         print('Message "' + ctx.message + '" sent successfully.')
-        with click.progressbar(label=label, length=length, fill_char=fill_char, empty_char=empty_char, show_eta=False) as bar:
+        with click.progressbar(
+            label=label, 
+            length=length, 
+            fill_char=fill_char, 
+            empty_char=empty_char, 
+            show_eta=False
+        ) as bar:
             bar.update(0)
             for letter in range(ctx.count):
                 show_message(
-                    device,
+                    device, 
                     ctx.message, 
                     fill='white', 
                     font=proportional(TINY_FONT), 
-                    scroll_delay=0.06)
-                bar.update(length/ctx.count)
+                    scroll_delay=0.06
+                )
+                bar.update(length / ctx.count)
     else:
         print('Message "' + ctx.message + '" has been logged successfully.')        
 
