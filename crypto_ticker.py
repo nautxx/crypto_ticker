@@ -6,7 +6,6 @@ import time
 from datetime import datetime, timedelta
 from config import config
 from pathlib import Path
-from color import Color
 from ticker_search import TickerSearch
 
 # skips luma libraries from loading when using mac or windows operating systems
