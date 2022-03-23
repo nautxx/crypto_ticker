@@ -1,7 +1,7 @@
 class Color:
     end = "\x1b[0m"
     # foreground colors
-    class f:
+    class fg:
         # standard colors
         default =  "\x1b[38;5;0m"
         black = "\x1b[38;5;0m"
@@ -22,7 +22,7 @@ class Color:
         light_cyan = "\x1b[38;5;14m"
         white = "\x1b[38;5;15m"
     # background colors
-    class b:
+    class bg:
         # standard colors
         default =  "\x1b[48;5;0m"
         black = "\x1b[48;5;0m"
@@ -42,6 +42,10 @@ class Color:
         light_magenta = "\x1b[48;5;13m"
         light_cyan = "\x1b[48;5;14m"
         white = "\x1b[48;5;15m"
+
+def wrapper(color, text):
+    wrapped = color + text + Color.end
+    return wrapped
 
 bold, dim, italic  = 1, 2, 3
 
