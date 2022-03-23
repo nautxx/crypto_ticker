@@ -63,9 +63,17 @@ class TickerSearch:
                             twenty_four_hour_color = Color.fg.red
 
                         if ticker_data.hour_change <= 1 and ticker_data.hour_change >=-1:
-                            hour_format = '{0:+,.8f}'.format(float(ticker_data.hour_change))
+                            hour_format = '{0:,.8f}'.format(abs(float(ticker_data.hour_change)))
+                            if float(ticker_data.hour_change_pct) < 0:
+                                hour_format = "▼" + str(hour_format)
+                            else:
+                                hour_format = "▲" + str(hour_format)
                         else:
-                            hour_format = '{0:+,.2f}'.format(float(ticker_data.hour_change))
+                            hour_format = '{0:,.2f}'.format(abs(float(ticker_data.hour_change)))
+                            if float(ticker_data.hour_change_pct) < 0:
+                                hour_format = "▼" + str(hour_format)
+                            else:
+                                hour_format = "▲" + str(hour_format)
 
                         if ticker_data.hour_change_pct <= 1 and ticker_data.hour_change_pct >=-1:
                             hour_pct_format = '{0:+,.2f}'.format(float(ticker_data.hour_change_pct))
