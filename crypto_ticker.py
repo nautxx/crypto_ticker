@@ -81,7 +81,7 @@ def get_current_timestamp():
     timestamp_formatted = timestamp.strftime("%Y.%m.%d %H:%M:%S")
     return timestamp
 
-def get_next_timestamp():
+def get_next_update_timestamp():
     next_time_stamp = (datetime.now() + timedelta(seconds=config['frequency']))
     next_time_stamp_formatted = next_time_stamp.strftime("%Y.%m.%d %H:%M:%S")
     return next_time_stamp
@@ -103,7 +103,7 @@ def cryptoticker_endless(ctx):
         data = get_crypto_data()
         terminal_message, ticker_message = ticker_search.compare_crypto(data)
         print('\n' + "           \t   Price                24hr           pct         1hr         pct            Last update" + '\n' + terminal_message)
-        print("Next Update: ".lower(), get_next_timestamp())
+        print("Next Update: ".lower(), get_next_update_timestamp())
         print("Press 'Ctrl + C' to exit")
         if system:
             for tick in range(ctx.count):
@@ -143,7 +143,7 @@ def messagebar_scrolling(ctx):
 @click.pass_obj
 def messagebar_static(ctx):
     if ctx.message is None:
-        ctx. message = input("Your message: ")
+        ctx.message = input("Your message: ")
     logger(ctx.message, "static")
 
     if system:
