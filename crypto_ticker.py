@@ -134,7 +134,12 @@ def messagebar_scrolling(ctx):
         with click.progressbar(label=label, length=length, fill_char=fill_char, empty_char=empty_char, show_eta=False) as bar:
             bar.update(0)
             for letter in range(ctx.count):
-                show_message(device, ctx.message, fill='white', font=proportional(TINY_FONT), scroll_delay=0.06)
+                show_message(
+                    device,
+                    ctx.message, 
+                    fill='white', 
+                    font=proportional(TINY_FONT), 
+                    scroll_delay=0.06)
                 bar.update(length/ctx.count)
     else:
         print('Message "' + ctx.message + '" has been logged successfully.')        
