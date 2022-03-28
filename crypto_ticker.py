@@ -36,26 +36,32 @@ class User(object):
         self.count = count
 
 @click.group()
-@click.option('--coin', 
+@click.option(
+    '--coin', 
     default='BTC', 
     help='Crypto ticker symbol. Multiple ticker symbols separate with comma'
 )
-@click.option('--currency', 
+@click.option(
+    '--currency', 
     default='USD', 
     help='Currency. Multiple currencies separate with comma'
 )
-@click.option('--apikey', 
+@click.option(
+    '--apikey', 
     default=None, 
     help='Enter API key from cryptocompare.com'
 )
-@click.option('--message', 
+@click.option(
+    '--message', 
     default=None, 
     help='Enter message to display for message_bar'
 )
-@click.option('--count', 
+@click.option(
+    '--count', 
     default=1, 
     help='Scrolling: Number of times to loop display. Static: Time in seconds to display'
 )
+
 @click.pass_context
 # user stored values entered in cli
 def main(ctx, coin, currency, apikey, message, count):
