@@ -5,6 +5,7 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from ticker_search import TickerSearch
+from messagebar import MessageBar
 
 # skips luma libraries from loading when using mac or windows operating systems
 system = platform.system() not in ['Darwin', 'Java', 'Windows']
