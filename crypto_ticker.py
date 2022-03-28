@@ -78,12 +78,6 @@ def get_next_update_timestamp():
     next_time_stamp_formatted = next_time_stamp.strftime("%Y.%m.%d %H:%M:%S")
     return next_time_stamp
 
-def logger(message, function):
-    path = Path(__file__).parent.absolute()
-    file = open(str(path) + "/message_log.txt", "a")
-    file.write("\n" + get_current_timestamp() + "_" + function + ": " + message)
-    file.close
-
 @main.command()
 @click.pass_obj
 def cryptoticker_endless(ctx):
@@ -116,7 +110,6 @@ def messagebar_scrolling(ctx):
     message_bar = MessageBar()
     if ctx.message is None:
         ctx. message = input("Your message: ")
-    # logger(ctx.message, "scrolling")
     message_bar.logger(str(get_current_timestamp()), ctx.message, "scrolling")
 
     if system:
