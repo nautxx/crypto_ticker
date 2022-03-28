@@ -113,6 +113,7 @@ def cryptoticker_endless(ctx):
 @main.command()
 @click.pass_obj
 def messagebar_scrolling(ctx):
+    message_bar = MessageBar()
     if ctx.message is None:
         ctx. message = input("Your message: ")
     logger(ctx.message, "scrolling")
