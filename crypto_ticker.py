@@ -109,7 +109,7 @@ def cryptoticker_endless(ctx):
 def messagebar_scrolling(ctx):
     message_bar = MessageBar()
     if ctx.message is None:
-        ctx. message = input("Your message: ")
+        ctx.message = input("Your message: ")
     message_bar.logger(str(get_current_timestamp()), ctx.message, "scrolling")
 
     if system:
