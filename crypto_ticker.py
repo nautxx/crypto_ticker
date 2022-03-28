@@ -144,7 +144,7 @@ def messagebar_scrolling(ctx):
 def messagebar_static(ctx):
     if ctx.message is None:
         ctx.message = input("Your message: ")
-    logger(ctx.message, "static")
+    message_bar.logger(str(get_current_timestamp()), ctx.message, "static")
 
     if system:
         with canvas(device) as draw:
