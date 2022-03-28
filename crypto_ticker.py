@@ -118,7 +118,7 @@ def messagebar_scrolling(ctx):
         empty_char = click.style('-', fg='white', dim=True)
         length = 100
 
-        print('Message "' + ctx.message + '" sent successfully.')
+        print(f'Message "{ctx.message}" has been sent successfully.')  
         with click.progressbar(
             label=label, 
             length=length, 
@@ -137,7 +137,7 @@ def messagebar_scrolling(ctx):
                 )
                 bar.update(length / ctx.count)
     else:
-        print('Message "' + ctx.message + '" has been logged successfully.')        
+        print(f'Message "{ctx.message}" has been logged successfully.')        
 
 @main.command()
 @click.pass_obj
@@ -162,7 +162,7 @@ def messagebar_static(ctx):
         fill_char = click.style('#', fg='green')
         empty_char = click.style('-', fg='white', dim=True)
 
-        print('Message "' + ctx.message + '" sent successfully.')
+        print(f'Message "{ctx.message}" has been sent successfully.')   
         with click.progressbar(
             iterable = iterable,
             label = label,
@@ -172,7 +172,7 @@ def messagebar_static(ctx):
             for tick in bar:                
                 time.sleep(1 / refresh)
     else:
-        print('Message "' + ctx.message + '" has been logged successfully.')
+        print(f'Message "{ctx.message}" has been logged successfully.')   
 
 if __name__ == '__main__':
     main()
