@@ -27,6 +27,15 @@ if system:
 
 DELAY = 300
 
+def get_current_timestamp():
+    timestamp = datetime.now()
+    timestamp_formatted = timestamp.strftime("%Y.%m.%d %H:%M:%S")
+    return timestamp
+
+def get_next_update_timestamp():
+    next_time_stamp = (datetime.now() + timedelta(seconds=DELAY))
+    next_time_stamp_formatted = next_time_stamp.strftime("%Y.%m.%d %H:%M:%S")
+    return next_time_stamp
 class User(object): 
     """Initializes user data input from command line."""
     def __init__(self, coin=None, currency=None, apikey=None, message=None, count=1):
@@ -67,16 +76,6 @@ class User(object):
 # user stored values entered in cli
 def main(ctx, coin, currency, apikey, message, count):
     ctx.obj = User(coin, currency, apikey, message, count)
-
-def get_current_timestamp():
-    timestamp = datetime.now()
-    timestamp_formatted = timestamp.strftime("%Y.%m.%d %H:%M:%S")
-    return timestamp
-
-def get_next_update_timestamp():
-    next_time_stamp = (datetime.now() + timedelta(seconds=DELAY))
-    next_time_stamp_formatted = next_time_stamp.strftime("%Y.%m.%d %H:%M:%S")
-    return next_time_stamp
 
 @main.command()
 @click.pass_obj
