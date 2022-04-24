@@ -101,7 +101,8 @@ def cryptoticker_endless(ctx):
                     font=proportional(TINY_FONT),
                     scroll_delay=0.06
                 )
-        time.sleep(DELAY)   # loop time delay in (s, seconds)
+        # loop time delay in (s, seconds)
+        time.sleep(DELAY)
 
 @main.command()
 @click.pass_obj
@@ -172,6 +173,7 @@ def messagebar_static(ctx):
                 time.sleep(1 / refresh)
     else:
         print(f'Message "{ctx.message}" has been logged successfully.')   
+
 
 if __name__ == '__main__':
     main()
