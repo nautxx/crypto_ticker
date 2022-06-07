@@ -39,7 +39,7 @@ def get_next_update_timestamp():
     next_time_stamp_formatted = next_time_stamp.strftime("%Y.%m.%d %H:%M:%S")
     return next_time_stamp
 
-    
+
 class User(object): 
     """Initializes user data input from command line."""
     def __init__(self, coin=None, currency=None, apikey=None, message=None, count=1):
@@ -48,6 +48,7 @@ class User(object):
         self.apikey = apikey
         self.message = message
         self.count = count
+
 
 @click.group()
 @click.option(
