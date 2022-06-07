@@ -2,8 +2,13 @@ import requests
 from datetime import datetime, timedelta
 from color import Color
 from ticker_data import TickerData
+import os
+from dotenv import load_dotenv  # pip install python-dotenv
 
+
+API_KEY = os.environ.get("API_KEY")
 CRYPTOCOMPARE_ENDPOINT = "https://min-api.cryptocompare.com/data/pricemultifull"
+
 
 class TickerSearch:
     def __init__(self):
@@ -12,7 +17,7 @@ class TickerSearch:
     def compare_crypto(self, api_key, coin, currency):
         output, output_display = "", ""
 
-        headers = {"api_key": api_key}
+        headers = {"api_key": API_KEY}
         query = {"fsyms": coin, "tsyms": currency}
         response = requests.get(
             url=f"{CRYPTOCOMPARE_ENDPOINT}",
