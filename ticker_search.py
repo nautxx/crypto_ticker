@@ -14,6 +14,7 @@ class TickerSearch:
     def __init__(self):
         pass
 
+
     def compare_crypto(self, api_key, coin, currency):
         output, output_display = "", ""
 
