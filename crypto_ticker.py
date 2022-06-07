@@ -25,7 +25,9 @@ if system:
         contrast=1
     )
 
+
 DELAY = 300
+
 
 def get_current_timestamp():
     timestamp = datetime.now()
@@ -77,6 +79,7 @@ class User(object):
 def main(ctx, coin, currency, apikey, message, count):
     ctx.obj = User(coin, currency, apikey, message, count)
 
+
 @main.command()
 @click.pass_obj
 def cryptoticker_endless(ctx):
@@ -103,6 +106,7 @@ def cryptoticker_endless(ctx):
                 )
         # loop time delay in (s, seconds)
         time.sleep(DELAY)
+
 
 @main.command()
 @click.pass_obj
@@ -138,6 +142,7 @@ def messagebar_scrolling(ctx):
                 bar.update(length / ctx.count)
     else:
         print(f'Message "{ctx.message}" has been logged successfully.')        
+
 
 @main.command()
 @click.pass_obj
