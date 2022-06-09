@@ -4,6 +4,7 @@ from color import Color
 from ticker_data import TickerData
 import os
 from dotenv import load_dotenv  # pip install python-dotenv
+import pandas as pd
 
 
 API_KEY = os.environ.get("API_KEY")
@@ -26,6 +27,7 @@ class TickerSearch:
             params=query
         )
         data = response.json()
+        data_df = pd.DataFrame(data)
 
         for coin in data['RAW']:
             for currency in data['RAW'][coin]:
@@ -110,7 +112,8 @@ class TickerSearch:
                             hour_color = Color.fg.green
                         else:
                             hour_color = Color.fg.red
-                            
+
+                    # Output for terminal        
                     coin_to_currency = str(coin + '-' + ticker_data.currency_symbol)
                     output += coin_to_currency.ljust(12,' ') \
                     + str(price_format).rjust(12,' ') + '\t' + twenty_four_hour_color \
@@ -120,6 +123,7 @@ class TickerSearch:
                     + str('(' + hour_pct_format + '%)').rjust(10,' ') + Color.end \
                     + str(ticker_data.last_update + '\n').rjust(24,' ') \
 
+                    # Output for led array
                     output_display += str(coin_to_currency + ": ").lower() \
                     + str(price_format) + str(' ' + hour_format + '    ')
 
