@@ -59,7 +59,7 @@ class User(object):
 @click.option(
     '--currency', 
     default='USD', 
-    help='Currency. Multiple currencies separate with comma'
+    help='Currency. Multiple currencies separated with a comma'
 )
 @click.option(
     '--apikey', 
